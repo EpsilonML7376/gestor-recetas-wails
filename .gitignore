@@ -1,0 +1,47 @@
+# Wails & Build
+build/bin/
+frontend/dist/
+frontend/dist-ssr/
+
+# Go
+bin/
+*.exe
+*.exe~
+*.dll
+*.so
+*.dylib
+*.test
+*.out
+
+# Node / JS
+node_modules/
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+logs/
+*.log
+
+# IDE / Editor
+.vscode/*
+!.vscode/extensions.json
+.idea/
+.DS_Store
+*.swp
+*.swo
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# Project Specific
+datos.db
+.env
+.env.local
+.env.production
+.env.*.local
+
+# Wails generated bindings (Uncomment if you don't want to track them)
+# frontend/src/wailsjs/
