@@ -2,6 +2,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { mutualesApi } from '../api/mutuales';
 import { models, repositories } from '../../wailsjs/go/models';
 import { useSnackbar } from 'notistack';
+import { getErrorMessage } from '../lib/errors';
 
 export const useMutuales = (filters?: repositories.MutualFilters) => {
   return useQuery({
@@ -28,10 +29,8 @@ export const useCreateMutual = () => {
       queryClient.invalidateQueries({ queryKey: ['mutuales'] });
       enqueueSnackbar('Mutual creada exitosamente', { variant: 'success' });
     },
-    onError: (error: any) => {
-      enqueueSnackbar(error.response?.data?.message || 'Error al crear la mutual', {
-        variant: 'error',
-      });
+    onError: (error: unknown) => {
+      enqueueSnackbar(getErrorMessage(error), { variant: 'error' });
     },
   });
 };
@@ -47,10 +46,8 @@ export const useUpdateMutual = () => {
       queryClient.invalidateQueries({ queryKey: ['mutuales'] });
       enqueueSnackbar('Mutual actualizada exitosamente', { variant: 'success' });
     },
-    onError: (error: any) => {
-      enqueueSnackbar(error.response?.data?.message || 'Error al actualizar la mutual', {
-        variant: 'error',
-      });
+    onError: (error: unknown) => {
+      enqueueSnackbar(getErrorMessage(error), { variant: 'error' });
     },
   });
 };

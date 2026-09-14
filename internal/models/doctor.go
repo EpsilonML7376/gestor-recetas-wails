@@ -7,4 +7,3 @@ type Doctor struct {
 
 	Recetas []Receta `gorm:"foreignKey:DoctorID" json:"recetas,omitempty"`
 }
-

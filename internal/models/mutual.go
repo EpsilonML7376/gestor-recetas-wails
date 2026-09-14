@@ -6,4 +6,3 @@ type Mutual struct {
 
 	Recetas []Receta `gorm:"foreignKey:MutualID" json:"recetas,omitempty"`
 }
-

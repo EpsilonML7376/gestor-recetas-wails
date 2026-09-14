@@ -12,14 +12,17 @@ import {
   ArrowBack as ArrowBackIcon,
 } from '@mui/icons-material';
 import { useNavigate, useParams } from 'react-router-dom';
+import { useSnackbar } from 'notistack';
 import { MainLayout } from '../../components/layout/MainLayout';
 import { useMutual, useCreateMutual, useUpdateMutual } from '../../hooks/useMutuales';
 import { LoadingSpinner } from '../../components/common/LoadingSpinner';
+import { models } from '../../../wailsjs/go/models';
 
 export const MutualForm: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const isEdit = !!id;
+  const { enqueueSnackbar } = useSnackbar();
 
   const { data: mutual, isLoading: loadingMutual } = useMutual(Number(id));
   const createMutual = useCreateMutual();
@@ -39,19 +42,21 @@ export const MutualForm: React.FC = () => {
     e.preventDefault();
 
     if (!nombre) {
-      alert('Por favor complete el campo requerido (Nombre)');
+      enqueueSnackbar('Por favor complete el campo requerido (Nombre)', {
+        variant: 'warning',
+      });
       return;
     }
 
-    const data = {
+    const data = new models.Mutual({
       nombre,
-    };
+    });
 
     try {
       if (isEdit) {
-        await updateMutual.mutateAsync({ id: Number(id), data: data as any });
+        await updateMutual.mutateAsync({ id: Number(id), data });
       } else {
-        await createMutual.mutateAsync(data as any);
+        await createMutual.mutateAsync(data);
       }
       navigate('/mutuales');
     } catch (error) {

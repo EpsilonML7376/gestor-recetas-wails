@@ -1,4 +1,21 @@
 import { QueryClient } from '@tanstack/react-query';
+import { getErrorMessage } from './errors';
+
+/**
+ * Matches domain errors that should not be retried (not found / duplicate).
+ * Wails IPC rejects with plain string messages, so classification relies on
+ * the message rather than an HTTP status code.
+ */
+const isDomainError = (message: string): boolean => {
+  const normalized = message.toLowerCase();
+  return (
+    normalized.includes('no encontrad') ||
+    normalized.includes('not found') ||
+    normalized.includes('duplicad') ||
+    normalized.includes('duplicate') ||
+    normalized.includes('ya existe')
+  );
+};
 
 /**
  * Configuración del QueryClient optimizada para producción
@@ -8,9 +25,9 @@ export const queryClient = new QueryClient({
     queries: {
       staleTime: 0, // Datos siempre se consideran viejos para forzar refresco en una app local
       gcTime: 1000 * 60 * 30, // 30 minutos
-      retry: (failureCount, error: any) => {
-        // No reintentar en errores 4xx
-        if (error?.response?.status >= 400 && error?.response?.status < 500) {
+      retry: (failureCount, error: unknown) => {
+        // Wails IPC errors are strings with no `response`; classify by message.
+        if (isDomainError(getErrorMessage(error))) {
           return false;
         }
         return failureCount < 3;
