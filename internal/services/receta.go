@@ -2,28 +2,40 @@ package services
 
 import (
 	"errors"
+	"fmt"
 
+	"GestorRecetasWails/internal/dto"
+	apperrors "GestorRecetasWails/internal/errors"
 	"GestorRecetasWails/internal/models"
 	"GestorRecetasWails/internal/repositories"
-	"GestorRecetasWails/internal/dto"
 	"go.uber.org/zap"
-	"gorm.io/gorm"
 )
 
+// RecetaRepository defines the data access operations RecetaService depends on.
+// The concrete repositories.RecetaRepository satisfies this interface.
+type RecetaRepository interface {
+	Create(*models.Receta) error
+	FindByID(uint) (*models.Receta, error)
+	FindAll(repositories.RecetaFilters) ([]models.Receta, error)
+	Update(*models.Receta) error
+	Delete(uint) error
+	Count(repositories.RecetaFilters) (int64, error)
+}
+
 type RecetaService struct {
-	repo   *repositories.RecetaRepository
+	repo   RecetaRepository
 	logger *zap.Logger
 }
 
-func NewRecetaService(repo *repositories.RecetaRepository, logger *zap.Logger) *RecetaService {
+func NewRecetaService(repo RecetaRepository, logger *zap.Logger) *RecetaService {
 	return &RecetaService{
 		repo:   repo,
 		logger: logger,
 	}
 }
 
-// CalcularTotal calcula el total sumando todos los lentes
-func (s *RecetaService) CalcularTotal(receta *models.Receta) {
+// calcularTotal calcula el total sumando todos los lentes
+func (s *RecetaService) calcularTotal(receta *models.Receta) {
 	total := 0
 	for _, lente := range receta.Lentes {
 		total += lente.CristalPrecio + lente.ArmazonPrecio
@@ -44,7 +56,7 @@ func (s *RecetaService) Create(receta *models.Receta) (*models.Receta, error) {
 		return nil, err
 	}
 
-	s.CalcularTotal(recetaCompleta)
+	s.calcularTotal(recetaCompleta)
 	*receta = *recetaCompleta
 
 	s.logger.Info("Receta creada exitosamente", zap.Uint("id", receta.ID))
@@ -55,16 +67,16 @@ func (s *RecetaService) Create(receta *models.Receta) (*models.Receta, error) {
 func (s *RecetaService) GetByID(id uint) (*models.Receta, error) {
 	receta, err := s.repo.FindByID(id)
 	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
+		if errors.Is(err, apperrors.ErrNotFound) {
 			s.logger.Warn("Receta no encontrada", zap.Uint("id", id))
-			return nil, errors.New("receta no encontrada")
+			return nil, fmt.Errorf("receta no encontrada: %w", apperrors.ErrNotFound)
 		}
 		s.logger.Error("Error al obtener receta", zap.Error(err))
 		return nil, err
 	}
 
 	// Calcular total
-	s.CalcularTotal(receta)
+	s.calcularTotal(receta)
 
 	return receta, nil
 }
@@ -79,7 +91,7 @@ func (s *RecetaService) GetAll(filters repositories.RecetaFilters) (*dto.Paginat
 
 	// Calcular total para cada receta
 	for i := range recetas {
-		s.CalcularTotal(&recetas[i])
+		s.calcularTotal(&recetas[i])
 	}
 
 	// Obtener el count total para paginación
@@ -97,8 +109,8 @@ func (s *RecetaService) Update(id uint, receta *models.Receta) error {
 	// Verificar que la receta existe
 	existente, err := s.repo.FindByID(id)
 	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return errors.New("receta no encontrada")
+		if errors.Is(err, apperrors.ErrNotFound) {
+			return fmt.Errorf("receta no encontrada: %w", apperrors.ErrNotFound)
 		}
 		return err
 	}
@@ -117,7 +129,7 @@ func (s *RecetaService) Update(id uint, receta *models.Receta) error {
 		return err
 	}
 
-	s.CalcularTotal(recetaActualizada)
+	s.calcularTotal(recetaActualizada)
 	*receta = *recetaActualizada
 
 	s.logger.Info("Receta actualizada exitosamente", zap.Uint("id", id))
@@ -129,8 +141,8 @@ func (s *RecetaService) Delete(id uint) error {
 	// Verificar que existe
 	_, err := s.repo.FindByID(id)
 	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return errors.New("receta no encontrada")
+		if errors.Is(err, apperrors.ErrNotFound) {
+			return fmt.Errorf("receta no encontrada: %w", apperrors.ErrNotFound)
 		}
 		return err
 	}
@@ -153,4 +165,3 @@ func (s *RecetaService) GetTotal(id uint) (int, error) {
 
 	return receta.TotalLente, nil
 }
-

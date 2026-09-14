@@ -4,39 +4,37 @@ import (
 	"fmt"
 
 	"GestorRecetasWails/internal/models"
-	"go.uber.org/zap"
 	"github.com/glebarez/sqlite"
+	"go.uber.org/zap"
 	"gorm.io/gorm"
 )
 
-var DB *gorm.DB
-
-// InitDB inicializa la conexión a la base de datos SQLite
-func InitDB(logger *zap.Logger) error {
+// InitDB inicializa la conexión a la base de datos SQLite y ejecuta las
+// migraciones. Retorna el handle para que main lo inyecte en los repositorios.
+func InitDB(logger *zap.Logger) (*gorm.DB, error) {
 	// DSN local
 	dsn := "datos.db"
 
-	var err error
-	DB, err = gorm.Open(sqlite.Open(dsn), &gorm.Config{})
+	db, err := gorm.Open(sqlite.Open(dsn), &gorm.Config{})
 	if err != nil {
-		return fmt.Errorf("error al conectar a la base de datos: %w", err)
+		return nil, fmt.Errorf("error al conectar a la base de datos: %w", err)
 	}
 
 	logger.Info("Conexión a SQLite exitosa")
 
 	// Migrar modelos
-	if err := migrateModels(logger); err != nil {
-		return err
+	if err := migrateModels(db, logger); err != nil {
+		return nil, err
 	}
 
-	return nil
+	return db, nil
 }
 
 // migrateModels ejecuta las migraciones automáticas
-func migrateModels(logger *zap.Logger) error {
+func migrateModels(db *gorm.DB, logger *zap.Logger) error {
 	logger.Info("Ejecutando migraciones...")
 
-	err := DB.AutoMigrate(
+	err := db.AutoMigrate(
 		&models.Cliente{},
 		&models.Doctor{},
 		&models.Mutual{},
@@ -52,10 +50,3 @@ func migrateModels(logger *zap.Logger) error {
 	logger.Info("Migraciones completadas exitosamente")
 	return nil
 }
-
-
-// GetDB retorna la instancia de la base de datos
-func GetDB() *gorm.DB {
-	return DB
-}
-

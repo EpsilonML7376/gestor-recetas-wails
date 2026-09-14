@@ -1,10 +1,14 @@
 package repositories
 
 import (
-	"GestorRecetasWails/internal/models"
-	"gorm.io/gorm"
+	"errors"
+	"fmt"
 	"time"
+
+	apperrors "GestorRecetasWails/internal/errors"
+	"GestorRecetasWails/internal/models"
 	"go.uber.org/zap"
+	"gorm.io/gorm"
 )
 
 type ClienteRepository struct {
@@ -50,10 +54,10 @@ func (r *ClienteRepository) FindAll(filters ClienteFilters) ([]models.Cliente, e
 	}
 
 	err := query.Order("apellido ASC, nombre ASC").Find(&clientes).Error
-	
+
 	duration := time.Since(start)
 	if filters.Search != "" && r.logger != nil {
-		r.logger.Info("Búsqueda de clientes completada", 
+		r.logger.Info("Búsqueda de clientes completada",
 			zap.String("search", filters.Search),
 			zap.Duration("duration", duration),
 			zap.Int("results", len(clientes)),
@@ -71,6 +75,9 @@ func (r *ClienteRepository) FindByID(id uint) (*models.Cliente, error) {
 	var cliente models.Cliente
 	err := r.db.First(&cliente, id).Error
 	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, fmt.Errorf("%w: cliente id %d", apperrors.ErrNotFound, id)
+		}
 		return nil, err
 	}
 	return &cliente, nil
@@ -91,6 +98,9 @@ func (r *ClienteRepository) FindByDNI(dni string) (*models.Cliente, error) {
 	var cliente models.Cliente
 	err := r.db.Where("dni = ?", dni).First(&cliente).Error
 	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, fmt.Errorf("%w: cliente dni %s", apperrors.ErrNotFound, dni)
+		}
 		return nil, err
 	}
 	return &cliente, nil
@@ -110,4 +120,3 @@ func (r *ClienteRepository) Count(filters ClienteFilters) (int64, error) {
 	err := query.Count(&count).Error
 	return count, err
 }
-
