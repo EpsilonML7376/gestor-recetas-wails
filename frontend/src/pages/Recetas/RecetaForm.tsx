@@ -214,8 +214,8 @@ export const RecetaForm: React.FC = () => {
 
         next[index] = {
           ...next[index],
-          [field]: finalValue as any,
-        };
+          [field]: finalValue,
+        } as GraduacionUI;
       }
       return next;
     });
@@ -358,9 +358,9 @@ export const RecetaForm: React.FC = () => {
 
     try {
       if (isEdit) {
-        await updateReceta.mutateAsync({ id: Number(id), data: data as any });
+        await updateReceta.mutateAsync({ id: Number(id), data });
       } else {
-        await createReceta.mutateAsync(data as any);
+        await createReceta.mutateAsync(data);
       }
       
       // Bypass el blocker y navegar

@@ -2,6 +2,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { clientesApi } from '../api/clientes';
 import { models, repositories } from '../../wailsjs/go/models';
 import { useSnackbar } from 'notistack';
+import { getErrorMessage } from '../lib/errors';
 
 export const useClientes = (filters?: repositories.ClienteFilters) => {
   return useQuery({
@@ -28,10 +29,8 @@ export const useCreateCliente = () => {
       queryClient.invalidateQueries({ queryKey: ['clientes'] });
       enqueueSnackbar('Cliente creado exitosamente', { variant: 'success' });
     },
-    onError: (error: any) => {
-      enqueueSnackbar(error.response?.data?.message || 'Error al crear el cliente', {
-        variant: 'error',
-      });
+    onError: (error: unknown) => {
+      enqueueSnackbar(getErrorMessage(error), { variant: 'error' });
     },
   });
 };
@@ -47,10 +46,8 @@ export const useUpdateCliente = () => {
       queryClient.invalidateQueries({ queryKey: ['clientes'] });
       enqueueSnackbar('Cliente actualizado exitosamente', { variant: 'success' });
     },
-    onError: (error: any) => {
-      enqueueSnackbar(error.response?.data?.message || 'Error al actualizar el cliente', {
-        variant: 'error',
-      });
+    onError: (error: unknown) => {
+      enqueueSnackbar(getErrorMessage(error), { variant: 'error' });
     },
   });
 };
@@ -65,10 +62,8 @@ export const useDeleteCliente = () => {
       queryClient.invalidateQueries({ queryKey: ['clientes'] });
       enqueueSnackbar('Cliente eliminado exitosamente', { variant: 'success' });
     },
-    onError: (error: any) => {
-      enqueueSnackbar(error.response?.data?.message || 'Error al eliminar el cliente', {
-        variant: 'error',
-      });
+    onError: (error: unknown) => {
+      enqueueSnackbar(getErrorMessage(error), { variant: 'error' });
     },
   });
 };

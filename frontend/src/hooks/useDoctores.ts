@@ -2,6 +2,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { doctoresApi } from '../api/doctores';
 import { models, repositories } from '../../wailsjs/go/models';
 import { useSnackbar } from 'notistack';
+import { getErrorMessage } from '../lib/errors';
 
 export const useDoctores = (filters?: repositories.DoctorFilters) => {
   return useQuery({
@@ -28,10 +29,8 @@ export const useCreateDoctor = () => {
       queryClient.invalidateQueries({ queryKey: ['doctores'] });
       enqueueSnackbar('Doctor creado exitosamente', { variant: 'success' });
     },
-    onError: (error: any) => {
-      enqueueSnackbar(error.response?.data?.message || 'Error al crear el doctor', {
-        variant: 'error',
-      });
+    onError: (error: unknown) => {
+      enqueueSnackbar(getErrorMessage(error), { variant: 'error' });
     },
   });
 };
@@ -47,10 +46,8 @@ export const useUpdateDoctor = () => {
       queryClient.invalidateQueries({ queryKey: ['doctores'] });
       enqueueSnackbar('Doctor actualizado exitosamente', { variant: 'success' });
     },
-    onError: (error: any) => {
-      enqueueSnackbar(error.response?.data?.message || 'Error al actualizar el doctor', {
-        variant: 'error',
-      });
+    onError: (error: unknown) => {
+      enqueueSnackbar(getErrorMessage(error), { variant: 'error' });
     },
   });
 };

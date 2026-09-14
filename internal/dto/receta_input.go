@@ -11,12 +11,12 @@ type LenteInput struct {
 }
 
 type RecetaInput struct {
-	Fecha        time.Time        `json:"fecha" binding:"required"`
-	Notas        string           `json:"notas"`
-	TieneMutual  bool             `json:"tieneMutual"`
-	ClienteID    uint             `json:"clienteId" binding:"required"`
-	DoctorID     uint             `json:"doctorId" binding:"required"`
-	MutualID     *uint            `json:"mutualId"`
+	Fecha        time.Time         `json:"fecha" binding:"required"`
+	Notas        string            `json:"notas"`
+	TieneMutual  bool              `json:"tieneMutual"`
+	ClienteID    uint              `json:"clienteId" binding:"required"`
+	DoctorID     uint              `json:"doctorId" binding:"required"`
+	MutualID     *uint             `json:"mutualId"`
 	Graduaciones []GraduacionInput `json:"graduaciones"`
-	Lentes       []LenteInput     `json:"lentes"`
+	Lentes       []LenteInput      `json:"lentes"`
 }

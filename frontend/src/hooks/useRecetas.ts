@@ -2,6 +2,7 @@ import { useQuery, useMutation, useQueryClient } from '@tanstack/react-query';
 import { recetasApi } from '../api/recetas';
 import { useSnackbar } from 'notistack';
 import { models, repositories } from '../../wailsjs/go/models';
+import { getErrorMessage } from '../lib/errors';
 
 export const useRecetas = (filters?: repositories.RecetaFilters) => {
   return useQuery({
@@ -28,10 +29,8 @@ export const useCreateReceta = () => {
       queryClient.invalidateQueries({ queryKey: ['recetas'] });
       enqueueSnackbar('Receta creada exitosamente', { variant: 'success' });
     },
-    onError: (error: any) => {
-      enqueueSnackbar(error.response?.data?.message || 'Error al crear la receta', {
-        variant: 'error',
-      });
+    onError: (error: unknown) => {
+      enqueueSnackbar(getErrorMessage(error), { variant: 'error' });
     },
   });
 };
@@ -48,10 +47,8 @@ export const useUpdateReceta = () => {
       queryClient.invalidateQueries({ queryKey: ['receta', variables.id] });
       enqueueSnackbar('Receta actualizada exitosamente', { variant: 'success' });
     },
-    onError: (error: any) => {
-      enqueueSnackbar(error.response?.data?.message || 'Error al actualizar la receta', {
-        variant: 'error',
-      });
+    onError: (error: unknown) => {
+      enqueueSnackbar(getErrorMessage(error), { variant: 'error' });
     },
   });
 };
@@ -66,10 +63,8 @@ export const useDeleteReceta = () => {
       queryClient.invalidateQueries({ queryKey: ['recetas'] });
       enqueueSnackbar('Receta eliminada exitosamente', { variant: 'success' });
     },
-    onError: (error: any) => {
-      enqueueSnackbar(error.response?.data?.message || 'Error al eliminar la receta', {
-        variant: 'error',
-      });
+    onError: (error: unknown) => {
+      enqueueSnackbar(getErrorMessage(error), { variant: 'error' });
     },
   });
 };

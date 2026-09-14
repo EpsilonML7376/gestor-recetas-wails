@@ -12,14 +12,17 @@ import {
   ArrowBack as ArrowBackIcon,
 } from '@mui/icons-material';
 import { useNavigate, useParams } from 'react-router-dom';
+import { useSnackbar } from 'notistack';
 import { MainLayout } from '../../components/layout/MainLayout';
 import { useDoctor, useCreateDoctor, useUpdateDoctor } from '../../hooks/useDoctores';
 import { LoadingSpinner } from '../../components/common/LoadingSpinner';
+import { models } from '../../../wailsjs/go/models';
 
 export const DoctorForm: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const isEdit = !!id;
+  const { enqueueSnackbar } = useSnackbar();
 
   const { data: doctor, isLoading: loadingDoctor } = useDoctor(Number(id));
   const createDoctor = useCreateDoctor();
@@ -41,20 +44,22 @@ export const DoctorForm: React.FC = () => {
     e.preventDefault();
 
     if (!nombre || !apellido) {
-      alert('Por favor complete todos los campos requeridos (Nombre, Apellido)');
+      enqueueSnackbar('Por favor complete todos los campos requeridos (Nombre, Apellido)', {
+        variant: 'warning',
+      });
       return;
     }
 
-    const data = {
+    const data = new models.Doctor({
       nombre,
       apellido,
-    };
+    });
 
     try {
       if (isEdit) {
-        await updateDoctor.mutateAsync({ id: Number(id), data: data as any });
+        await updateDoctor.mutateAsync({ id: Number(id), data });
       } else {
-        await createDoctor.mutateAsync(data as any);
+        await createDoctor.mutateAsync(data);
       }
       navigate('/doctores');
     } catch (error) {

@@ -84,7 +84,7 @@ export const SimilarClientesWarning: React.FC<SimilarClientesWarningProps> = ({
                     Seleccionar
                   </Button>
                 ) : (
-                  <Button size="small" variant="outlined" onClick={() => navigate(`/clientes/editar/${cliente.id}`)}>
+                  <Button size="small" variant="outlined" onClick={() => navigate(`/clientes/${cliente.id}/editar`)}>
                     Ver Perfil
                   </Button>
                 )

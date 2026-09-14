@@ -9,4 +9,3 @@ type Cliente struct {
 
 	Recetas []Receta `gorm:"foreignKey:ClienteID" json:"recetas,omitempty"`
 }
-

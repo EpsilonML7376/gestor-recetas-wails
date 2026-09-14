@@ -12,15 +12,18 @@ import {
   ArrowBack as ArrowBackIcon,
 } from '@mui/icons-material';
 import { useNavigate, useParams } from 'react-router-dom';
+import { useSnackbar } from 'notistack';
 import { MainLayout } from '../../components/layout/MainLayout';
 import { useCliente, useCreateCliente, useUpdateCliente } from '../../hooks/useClientes';
 import { LoadingSpinner } from '../../components/common/LoadingSpinner';
 import { SimilarClientesWarning } from '../../components/clientes/SimilarClientesWarning';
+import { models } from '../../../wailsjs/go/models';
 
 export const ClienteForm: React.FC = () => {
   const { id } = useParams<{ id: string }>();
   const navigate = useNavigate();
   const isEdit = !!id;
+  const { enqueueSnackbar } = useSnackbar();
 
   const { data: cliente, isLoading: loadingCliente } = useCliente(Number(id));
   const createCliente = useCreateCliente();
@@ -46,22 +49,24 @@ export const ClienteForm: React.FC = () => {
     e.preventDefault();
 
     if (!nombre || !apellido) {
-      alert('Por favor complete todos los campos requeridos (Nombre y Apellido)');
+      enqueueSnackbar('Por favor complete todos los campos requeridos (Nombre y Apellido)', {
+        variant: 'warning',
+      });
       return;
     }
 
-    const data = {
+    const data = new models.Cliente({
       nombre,
       apellido,
       dni,
       telefono: telefono || undefined,
-    };
+    });
 
     try {
       if (isEdit) {
-        await updateCliente.mutateAsync({ id: Number(id), data: data as any });
+        await updateCliente.mutateAsync({ id: Number(id), data });
       } else {
-        await createCliente.mutateAsync(data as any);
+        await createCliente.mutateAsync(data);
       }
       navigate('/clientes');
     } catch (error) {

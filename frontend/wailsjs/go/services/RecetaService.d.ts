@@ -4,8 +4,6 @@ import {models} from '../models';
 import {repositories} from '../models';
 import {dto} from '../models';
 
-export function CalcularTotal(arg1:models.Receta):Promise<void>;
-
 export function Create(arg1:models.Receta):Promise<models.Receta>;
 
 export function Delete(arg1:number):Promise<void>;
