@@ -2,20 +2,32 @@ package services
 
 import (
 	"errors"
+	"fmt"
 
+	"GestorRecetasWails/internal/dto"
+	apperrors "GestorRecetasWails/internal/errors"
 	"GestorRecetasWails/internal/models"
 	"GestorRecetasWails/internal/repositories"
-	"GestorRecetasWails/internal/dto"
 	"go.uber.org/zap"
-	"gorm.io/gorm"
 )
 
+// MutualRepository defines the data access operations MutualService depends on.
+// The concrete repositories.MutualRepository satisfies this interface.
+type MutualRepository interface {
+	Create(*models.Mutual) error
+	FindAll(repositories.MutualFilters) ([]models.Mutual, error)
+	FindByID(uint) (*models.Mutual, error)
+	Update(*models.Mutual) error
+	Delete(uint) error
+	Count(repositories.MutualFilters) (int64, error)
+}
+
 type MutualService struct {
-	repo   *repositories.MutualRepository
+	repo   MutualRepository
 	logger *zap.Logger
 }
 
-func NewMutualService(repo *repositories.MutualRepository, logger *zap.Logger) *MutualService {
+func NewMutualService(repo MutualRepository, logger *zap.Logger) *MutualService {
 	return &MutualService{
 		repo:   repo,
 		logger: logger,
@@ -55,9 +67,9 @@ func (s *MutualService) GetAll(filters repositories.MutualFilters) (*dto.Paginat
 func (s *MutualService) GetByID(id uint) (*models.Mutual, error) {
 	mutual, err := s.repo.FindByID(id)
 	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
+		if errors.Is(err, apperrors.ErrNotFound) {
 			s.logger.Warn("Mutual no encontrada", zap.Uint("id", id))
-			return nil, errors.New("mutual no encontrada")
+			return nil, fmt.Errorf("mutual no encontrada: %w", apperrors.ErrNotFound)
 		}
 		s.logger.Error("Error al obtener mutual", zap.Error(err))
 		return nil, err
@@ -71,8 +83,8 @@ func (s *MutualService) Update(id uint, mutual *models.Mutual) error {
 	// Verificar que la mutual existe
 	existente, err := s.repo.FindByID(id)
 	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return errors.New("mutual no encontrada")
+		if errors.Is(err, apperrors.ErrNotFound) {
+			return fmt.Errorf("mutual no encontrada: %w", apperrors.ErrNotFound)
 		}
 		return err
 	}
@@ -89,13 +101,12 @@ func (s *MutualService) Update(id uint, mutual *models.Mutual) error {
 	return nil
 }
 
-
 // Delete elimina un mutual
 func (s *MutualService) Delete(id uint) error {
-if err := s.repo.Delete(id); err != nil {
-s.logger.Error("Error al eliminar mutual", zap.Error(err))
-return err
-}
-s.logger.Info("Mutual eliminado exitosamente", zap.Uint("id", id))
-return nil
+	if err := s.repo.Delete(id); err != nil {
+		s.logger.Error("Error al eliminar mutual", zap.Error(err))
+		return err
+	}
+	s.logger.Info("Mutual eliminado exitosamente", zap.Uint("id", id))
+	return nil
 }

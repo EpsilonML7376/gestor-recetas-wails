@@ -24,10 +24,10 @@ func main() {
 	defer logger.Sync()
 
 	// Inicializar base de datos SQLite
-	if err := database.InitDB(logger); err != nil {
+	db, err := database.InitDB(logger)
+	if err != nil {
 		logger.Fatal("Error al inicializar base de datos", zap.Error(err))
 	}
-	db := database.GetDB()
 
 	// Repositorios
 	recetaRepo := repositories.NewRecetaRepository(db)
@@ -45,7 +45,7 @@ func main() {
 	app := NewApp()
 
 	// Create application with options
-	err := wails.Run(&options.App{
+	err = wails.Run(&options.App{
 		Title:            "Gestor de Recetas",
 		Width:            1024,
 		Height:           768,

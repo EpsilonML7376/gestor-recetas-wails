@@ -2,20 +2,32 @@ package services
 
 import (
 	"errors"
+	"fmt"
 
+	"GestorRecetasWails/internal/dto"
+	apperrors "GestorRecetasWails/internal/errors"
 	"GestorRecetasWails/internal/models"
 	"GestorRecetasWails/internal/repositories"
-	"GestorRecetasWails/internal/dto"
 	"go.uber.org/zap"
-	"gorm.io/gorm"
 )
 
+// DoctorRepository defines the data access operations DoctorService depends on.
+// The concrete repositories.DoctorRepository satisfies this interface.
+type DoctorRepository interface {
+	Create(*models.Doctor) error
+	FindAll(repositories.DoctorFilters) ([]models.Doctor, error)
+	FindByID(uint) (*models.Doctor, error)
+	Update(*models.Doctor) error
+	Delete(uint) error
+	Count(repositories.DoctorFilters) (int64, error)
+}
+
 type DoctorService struct {
-	repo   *repositories.DoctorRepository
+	repo   DoctorRepository
 	logger *zap.Logger
 }
 
-func NewDoctorService(repo *repositories.DoctorRepository, logger *zap.Logger) *DoctorService {
+func NewDoctorService(repo DoctorRepository, logger *zap.Logger) *DoctorService {
 	return &DoctorService{
 		repo:   repo,
 		logger: logger,
@@ -55,9 +67,9 @@ func (s *DoctorService) GetAll(filters repositories.DoctorFilters) (*dto.Paginat
 func (s *DoctorService) GetByID(id uint) (*models.Doctor, error) {
 	doctor, err := s.repo.FindByID(id)
 	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
+		if errors.Is(err, apperrors.ErrNotFound) {
 			s.logger.Warn("Doctor no encontrado", zap.Uint("id", id))
-			return nil, errors.New("doctor no encontrado")
+			return nil, fmt.Errorf("doctor no encontrado: %w", apperrors.ErrNotFound)
 		}
 		s.logger.Error("Error al obtener doctor", zap.Error(err))
 		return nil, err
@@ -71,8 +83,8 @@ func (s *DoctorService) Update(id uint, doctor *models.Doctor) error {
 	// Verificar que el doctor existe
 	existente, err := s.repo.FindByID(id)
 	if err != nil {
-		if errors.Is(err, gorm.ErrRecordNotFound) {
-			return errors.New("doctor no encontrado")
+		if errors.Is(err, apperrors.ErrNotFound) {
+			return fmt.Errorf("doctor no encontrado: %w", apperrors.ErrNotFound)
 		}
 		return err
 	}
@@ -89,13 +101,12 @@ func (s *DoctorService) Update(id uint, doctor *models.Doctor) error {
 	return nil
 }
 
-
 // Delete elimina un doctor
 func (s *DoctorService) Delete(id uint) error {
-if err := s.repo.Delete(id); err != nil {
-s.logger.Error("Error al eliminar doctor", zap.Error(err))
-return err
-}
-s.logger.Info("Doctor eliminado exitosamente", zap.Uint("id", id))
-return nil
+	if err := s.repo.Delete(id); err != nil {
+		s.logger.Error("Error al eliminar doctor", zap.Error(err))
+		return err
+	}
+	s.logger.Info("Doctor eliminado exitosamente", zap.Uint("id", id))
+	return nil
 }

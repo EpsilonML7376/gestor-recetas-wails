@@ -1,6 +1,10 @@
 package repositories
 
 import (
+	"errors"
+	"fmt"
+
+	apperrors "GestorRecetasWails/internal/errors"
 	"GestorRecetasWails/internal/models"
 	"gorm.io/gorm"
 )
@@ -57,6 +61,9 @@ func (r *MutualRepository) FindByID(id uint) (*models.Mutual, error) {
 	var mutual models.Mutual
 	err := r.db.First(&mutual, id).Error
 	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, fmt.Errorf("%w: mutual id %d", apperrors.ErrNotFound, id)
+		}
 		return nil, err
 	}
 	return &mutual, nil
@@ -82,8 +89,7 @@ func (r *MutualRepository) Count(filters MutualFilters) (int64, error) {
 	return count, err
 }
 
-
 // Delete elimina un mutual
 func (r *MutualRepository) Delete(id uint) error {
-return r.db.Delete(&models.Mutual{}, id).Error
+	return r.db.Delete(&models.Mutual{}, id).Error
 }

@@ -1,6 +1,10 @@
 package repositories
 
 import (
+	"errors"
+	"fmt"
+
+	apperrors "GestorRecetasWails/internal/errors"
 	"GestorRecetasWails/internal/models"
 	"gorm.io/gorm"
 )
@@ -57,6 +61,9 @@ func (r *DoctorRepository) FindByID(id uint) (*models.Doctor, error) {
 	var doctor models.Doctor
 	err := r.db.First(&doctor, id).Error
 	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, fmt.Errorf("%w: doctor id %d", apperrors.ErrNotFound, id)
+		}
 		return nil, err
 	}
 	return &doctor, nil
@@ -82,8 +89,7 @@ func (r *DoctorRepository) Count(filters DoctorFilters) (int64, error) {
 	return count, err
 }
 
-
 // Delete elimina un doctor
 func (r *DoctorRepository) Delete(id uint) error {
-return r.db.Delete(&models.Doctor{}, id).Error
+	return r.db.Delete(&models.Doctor{}, id).Error
 }

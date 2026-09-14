@@ -1,8 +1,11 @@
 package repositories
 
 import (
+	"errors"
+	"fmt"
 	"time"
 
+	apperrors "GestorRecetasWails/internal/errors"
 	"GestorRecetasWails/internal/models"
 	"gorm.io/gorm"
 )
@@ -41,6 +44,9 @@ func (r *RecetaRepository) FindByID(id uint) (*models.Receta, error) {
 		First(&receta, id).Error
 
 	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return nil, fmt.Errorf("%w: receta id %d", apperrors.ErrNotFound, id)
+		}
 		return nil, err
 	}
 
@@ -57,32 +63,7 @@ func (r *RecetaRepository) FindAll(filters RecetaFilters) ([]models.Receta, erro
 		Preload("Graduaciones").
 		Preload("Lentes")
 
-	// Aplicar filtros de fecha
-	if filters.FechaDesde != nil || filters.FechaHasta != nil {
-		if filters.FechaDesde != nil && filters.FechaHasta != nil {
-			startOfDayDesde := time.Date(filters.FechaDesde.Year(), filters.FechaDesde.Month(), filters.FechaDesde.Day(), 0, 0, 0, 0, filters.FechaDesde.Location())
-			endOfDayHasta := time.Date(filters.FechaHasta.Year(), filters.FechaHasta.Month(), filters.FechaHasta.Day(), 23, 59, 59, 999999999, filters.FechaHasta.Location())
-			query = query.Where("fecha >= ? AND fecha <= ?", startOfDayDesde, endOfDayHasta)
-		} else if filters.FechaDesde != nil {
-			startOfDayDesde := time.Date(filters.FechaDesde.Year(), filters.FechaDesde.Month(), filters.FechaDesde.Day(), 0, 0, 0, 0, filters.FechaDesde.Location())
-			query = query.Where("fecha >= ?", startOfDayDesde)
-		} else if filters.FechaHasta != nil {
-			endOfDayHasta := time.Date(filters.FechaHasta.Year(), filters.FechaHasta.Month(), filters.FechaHasta.Day(), 23, 59, 59, 999999999, filters.FechaHasta.Location())
-			query = query.Where("fecha <= ?", endOfDayHasta)
-		}
-	}
-
-	if filters.ClienteID != nil {
-		query = query.Where("cliente_id = ?", *filters.ClienteID)
-	}
-
-	if filters.DoctorID != nil {
-		query = query.Where("doctor_id = ?", *filters.DoctorID)
-	}
-
-	if filters.MutualID != nil {
-		query = query.Where("mutual_id = ?", *filters.MutualID)
-	}
+	query = applyRecetaFilters(query, filters)
 
 	// Aplicar paginación
 	if filters.Limit > 0 {
@@ -186,7 +167,16 @@ func (r *RecetaRepository) Count(filters RecetaFilters) (int64, error) {
 	var count int64
 	query := r.db.Model(&models.Receta{})
 
-	// Aplicar los mismos filtros que en FindAll (sin paginación)
+	query = applyRecetaFilters(query, filters)
+
+	err := query.Count(&count).Error
+	return count, err
+}
+
+// applyRecetaFilters aplica los predicados de filtrado compartidos por FindAll
+// y Count. No aplica paginación (eso es responsabilidad exclusiva de FindAll).
+func applyRecetaFilters(query *gorm.DB, filters RecetaFilters) *gorm.DB {
+	// Filtros de fecha
 	if filters.FechaDesde != nil || filters.FechaHasta != nil {
 		if filters.FechaDesde != nil && filters.FechaHasta != nil {
 			startOfDayDesde := time.Date(filters.FechaDesde.Year(), filters.FechaDesde.Month(), filters.FechaDesde.Day(), 0, 0, 0, 0, filters.FechaDesde.Location())
@@ -213,6 +203,5 @@ func (r *RecetaRepository) Count(filters RecetaFilters) (int64, error) {
 		query = query.Where("mutual_id = ?", *filters.MutualID)
 	}
 
-	err := query.Count(&count).Error
-	return count, err
+	return query
 }
