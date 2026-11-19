@@ -16,6 +16,7 @@ import { MainLayout } from '../../components/layout/MainLayout';
 import { useCliente, useCreateCliente, useUpdateCliente } from '../../hooks/useClientes';
 import { LoadingSpinner } from '../../components/common/LoadingSpinner';
 import { SimilarClientesWarning } from '../../components/clientes/SimilarClientesWarning';
+import { models } from '../../../wailsjs/go/models';
 
 export const ClienteForm: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -50,18 +51,18 @@ export const ClienteForm: React.FC = () => {
       return;
     }
 
-    const data = {
+    const data = models.Cliente.createFrom({
       nombre,
       apellido,
       dni,
-      telefono: telefono || undefined,
-    };
+      telefono: telefono || '',
+    });
 
     try {
       if (isEdit) {
-        await updateCliente.mutateAsync({ id: Number(id), data: data as any });
+        await updateCliente.mutateAsync({ id: Number(id), data });
       } else {
-        await createCliente.mutateAsync(data as any);
+        await createCliente.mutateAsync(data);
       }
       navigate('/clientes');
     } catch (error) {

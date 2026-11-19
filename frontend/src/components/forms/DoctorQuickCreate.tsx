@@ -29,7 +29,7 @@ export const DoctorQuickCreate: React.FC<DoctorQuickCreateProps> = ({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const newDoctor = await createDoctor.mutateAsync({ ...({} as any), nombre, apellido });
+      const newDoctor = await createDoctor.mutateAsync(models.Doctor.createFrom({ nombre, apellido }));
       setNombre('');
       setApellido('');
       if (onCreated) {

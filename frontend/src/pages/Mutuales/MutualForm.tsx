@@ -15,6 +15,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { MainLayout } from '../../components/layout/MainLayout';
 import { useMutual, useCreateMutual, useUpdateMutual } from '../../hooks/useMutuales';
 import { LoadingSpinner } from '../../components/common/LoadingSpinner';
+import { models } from '../../../wailsjs/go/models';
 
 export const MutualForm: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -43,15 +44,15 @@ export const MutualForm: React.FC = () => {
       return;
     }
 
-    const data = {
+    const data = models.Mutual.createFrom({
       nombre,
-    };
+    });
 
     try {
       if (isEdit) {
-        await updateMutual.mutateAsync({ id: Number(id), data: data as any });
+        await updateMutual.mutateAsync({ id: Number(id), data });
       } else {
-        await createMutual.mutateAsync(data as any);
+        await createMutual.mutateAsync(data);
       }
       navigate('/mutuales');
     } catch (error) {

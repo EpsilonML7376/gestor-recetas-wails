@@ -2,9 +2,9 @@ package repositories
 
 import (
 	"GestorRecetasWails/internal/models"
+	"go.uber.org/zap"
 	"gorm.io/gorm"
 	"time"
-	"go.uber.org/zap"
 )
 
 type ClienteRepository struct {
@@ -50,10 +50,10 @@ func (r *ClienteRepository) FindAll(filters ClienteFilters) ([]models.Cliente, e
 	}
 
 	err := query.Order("apellido ASC, nombre ASC").Find(&clientes).Error
-	
+
 	duration := time.Since(start)
 	if filters.Search != "" && r.logger != nil {
-		r.logger.Info("Búsqueda de clientes completada", 
+		r.logger.Info("Búsqueda de clientes completada",
 			zap.String("search", filters.Search),
 			zap.Duration("duration", duration),
 			zap.Int("results", len(clientes)),
@@ -110,4 +110,3 @@ func (r *ClienteRepository) Count(filters ClienteFilters) (int64, error) {
 	err := query.Count(&count).Error
 	return count, err
 }
-

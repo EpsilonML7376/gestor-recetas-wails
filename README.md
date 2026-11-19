@@ -2,8 +2,6 @@
 
 Una aplicación de escritorio moderna y eficiente para la gestión de recetas de lentes, diseñada específicamente para ópticas. Construida con **Go**, **Wails v2** y **React**.
 
-![App Screenshot](https://via.placeholder.com/800x450?text=Gestor+de+Recetas)
-
 ## 🚀 Características
 
 - **Gestión de Recetas**: Registro completo de recetas con graduaciones (lejos/cerca, ojo izquierdo/derecho), armazones y cristales.
@@ -27,7 +25,7 @@ Una aplicación de escritorio moderna y eficiente para la gestión de recetas de
 
 ### Requisitos Previos
 
-1. [Go](https://golang.org/dl/) (v1.21+)
+1. [Go](https://golang.org/dl/) (v1.25+)
 2. [Node.js](https://nodejs.org/) (v18+)
 3. [Wails CLI](https://wails.io/docs/gettingstarted/installation)
 
@@ -35,8 +33,8 @@ Una aplicación de escritorio moderna y eficiente para la gestión de recetas de
 
 1. **Clonar el repositorio:**
    ```bash
-   git clone https://github.com/tu-usuario/GestorRecetasWails.git
-   cd GestorRecetasWails
+   git clone https://github.com/EpsilonML7376/gestor-recetas-wails.git
+   cd gestor-recetas-wails
    ```
 
 2. **Ejecutar en modo desarrollo:**
@@ -59,7 +57,7 @@ El instalador/ejecutable se encontrará en la carpeta `build/bin`.
 - `app.go`: Manejo del ciclo de vida de la aplicación.
 - `internal/`: Lógica de negocio, servicios y repositorios en Go.
 - `frontend/`: Aplicación React + Vite.
-- `wailsjs/`: Enlaces generados automáticamente entre Go y JavaScript.
+- `frontend/wailsjs/`: Enlaces generados automáticamente entre Go y JavaScript.
 
 ## 📄 Licencia
 

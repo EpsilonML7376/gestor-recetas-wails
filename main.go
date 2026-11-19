@@ -3,6 +3,7 @@ package main
 import (
 	"embed"
 	"fmt"
+	"log"
 
 	"GestorRecetasWails/internal/database"
 	"GestorRecetasWails/internal/repositories"
@@ -20,8 +21,11 @@ var assets embed.FS
 
 func main() {
 	// Inicializar logger
-	logger, _ := zap.NewProduction()
-	defer logger.Sync()
+	logger, err := zap.NewProduction()
+	if err != nil {
+		log.Fatalf("error al inicializar logger: %v", err)
+	}
+	defer func() { _ = logger.Sync() }()
 
 	// Inicializar base de datos SQLite
 	if err := database.InitDB(logger); err != nil {
@@ -45,7 +49,7 @@ func main() {
 	app := NewApp()
 
 	// Create application with options
-	err := wails.Run(&options.App{
+	err = wails.Run(&options.App{
 		Title:            "Gestor de Recetas",
 		Width:            1024,
 		Height:           768,

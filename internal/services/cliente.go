@@ -3,9 +3,9 @@ package services
 import (
 	"errors"
 
+	"GestorRecetasWails/internal/dto"
 	"GestorRecetasWails/internal/models"
 	"GestorRecetasWails/internal/repositories"
-	"GestorRecetasWails/internal/dto"
 	"go.uber.org/zap"
 	"gorm.io/gorm"
 )
@@ -108,4 +108,3 @@ func (s *ClienteService) Delete(id uint) error {
 	s.logger.Info("Cliente eliminado exitosamente", zap.Uint("id", id))
 	return nil
 }
-

@@ -82,8 +82,7 @@ func (r *DoctorRepository) Count(filters DoctorFilters) (int64, error) {
 	return count, err
 }
 
-
 // Delete elimina un doctor
 func (r *DoctorRepository) Delete(id uint) error {
-return r.db.Delete(&models.Doctor{}, id).Error
+	return r.db.Delete(&models.Doctor{}, id).Error
 }

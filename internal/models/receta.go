@@ -9,7 +9,7 @@ type Receta struct {
 	TieneMutual bool      `json:"tieneMutual"`
 
 	// Campo virtual para el total (no se guarda en BD)
-	TotalLente int `gorm:"-" json:"total"`
+	TotalLente int64 `gorm:"-" json:"total"`
 
 	// Foreign Keys
 	ClienteID uint  `json:"clienteId" binding:"required"`

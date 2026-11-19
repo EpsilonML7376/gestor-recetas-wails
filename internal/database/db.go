@@ -4,8 +4,8 @@ import (
 	"fmt"
 
 	"GestorRecetasWails/internal/models"
-	"go.uber.org/zap"
 	"github.com/glebarez/sqlite"
+	"go.uber.org/zap"
 	"gorm.io/gorm"
 )
 
@@ -53,9 +53,7 @@ func migrateModels(logger *zap.Logger) error {
 	return nil
 }
 
-
 // GetDB retorna la instancia de la base de datos
 func GetDB() *gorm.DB {
 	return DB
 }
-

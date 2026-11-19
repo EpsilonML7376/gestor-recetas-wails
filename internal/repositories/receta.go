@@ -33,9 +33,9 @@ func (r *RecetaRepository) Create(receta *models.Receta) error {
 // FindByID obtiene una receta por ID con todas sus relaciones
 func (r *RecetaRepository) FindByID(id uint) (*models.Receta, error) {
 	var receta models.Receta
-	err := r.db.Preload("Cliente").
-		Preload("Doctor").
-		Preload("Mutual").
+	err := r.db.Preload("Cliente", func(db *gorm.DB) *gorm.DB { return db.Unscoped() }).
+		Preload("Doctor", func(db *gorm.DB) *gorm.DB { return db.Unscoped() }).
+		Preload("Mutual", func(db *gorm.DB) *gorm.DB { return db.Unscoped() }).
 		Preload("Graduaciones").
 		Preload("Lentes").
 		First(&receta, id).Error
@@ -51,9 +51,9 @@ func (r *RecetaRepository) FindByID(id uint) (*models.Receta, error) {
 func (r *RecetaRepository) FindAll(filters RecetaFilters) ([]models.Receta, error) {
 	var recetas []models.Receta
 
-	query := r.db.Preload("Cliente").
-		Preload("Doctor").
-		Preload("Mutual").
+	query := r.db.Preload("Cliente", func(db *gorm.DB) *gorm.DB { return db.Unscoped() }).
+		Preload("Doctor", func(db *gorm.DB) *gorm.DB { return db.Unscoped() }).
+		Preload("Mutual", func(db *gorm.DB) *gorm.DB { return db.Unscoped() }).
 		Preload("Graduaciones").
 		Preload("Lentes")
 

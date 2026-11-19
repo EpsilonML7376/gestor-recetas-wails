@@ -28,8 +28,8 @@ export const useCreateReceta = () => {
       queryClient.invalidateQueries({ queryKey: ['recetas'] });
       enqueueSnackbar('Receta creada exitosamente', { variant: 'success' });
     },
-    onError: (error: any) => {
-      enqueueSnackbar(error.response?.data?.message || 'Error al crear la receta', {
+    onError: (error: Error) => {
+      enqueueSnackbar(error?.message || 'Error al crear la receta', {
         variant: 'error',
       });
     },
@@ -48,8 +48,8 @@ export const useUpdateReceta = () => {
       queryClient.invalidateQueries({ queryKey: ['receta', variables.id] });
       enqueueSnackbar('Receta actualizada exitosamente', { variant: 'success' });
     },
-    onError: (error: any) => {
-      enqueueSnackbar(error.response?.data?.message || 'Error al actualizar la receta', {
+    onError: (error: Error) => {
+      enqueueSnackbar(error?.message || 'Error al actualizar la receta', {
         variant: 'error',
       });
     },
@@ -66,8 +66,8 @@ export const useDeleteReceta = () => {
       queryClient.invalidateQueries({ queryKey: ['recetas'] });
       enqueueSnackbar('Receta eliminada exitosamente', { variant: 'success' });
     },
-    onError: (error: any) => {
-      enqueueSnackbar(error.response?.data?.message || 'Error al eliminar la receta', {
+    onError: (error: Error) => {
+      enqueueSnackbar(error?.message || 'Error al eliminar la receta', {
         variant: 'error',
       });
     },

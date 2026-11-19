@@ -32,12 +32,12 @@ export const ClienteQuickCreate: React.FC<ClienteQuickCreateProps> = ({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const newCliente = await createCliente.mutateAsync({ ...({} as any),
+      const newCliente = await createCliente.mutateAsync(models.Cliente.createFrom({
         nombre,
         apellido,
         dni,
-        telefono: telefono || undefined,
-      });
+        telefono: telefono || '',
+      }));
       setNombre('');
       setApellido('');
       setDni('');

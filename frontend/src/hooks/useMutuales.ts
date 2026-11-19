@@ -28,8 +28,8 @@ export const useCreateMutual = () => {
       queryClient.invalidateQueries({ queryKey: ['mutuales'] });
       enqueueSnackbar('Mutual creada exitosamente', { variant: 'success' });
     },
-    onError: (error: any) => {
-      enqueueSnackbar(error.response?.data?.message || 'Error al crear la mutual', {
+    onError: (error: Error) => {
+      enqueueSnackbar(error?.message || 'Error al crear la mutual', {
         variant: 'error',
       });
     },
@@ -47,8 +47,8 @@ export const useUpdateMutual = () => {
       queryClient.invalidateQueries({ queryKey: ['mutuales'] });
       enqueueSnackbar('Mutual actualizada exitosamente', { variant: 'success' });
     },
-    onError: (error: any) => {
-      enqueueSnackbar(error.response?.data?.message || 'Error al actualizar la mutual', {
+    onError: (error: Error) => {
+      enqueueSnackbar(error?.message || 'Error al actualizar la mutual', {
         variant: 'error',
       });
     },

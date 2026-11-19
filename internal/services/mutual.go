@@ -3,9 +3,9 @@ package services
 import (
 	"errors"
 
+	"GestorRecetasWails/internal/dto"
 	"GestorRecetasWails/internal/models"
 	"GestorRecetasWails/internal/repositories"
-	"GestorRecetasWails/internal/dto"
 	"go.uber.org/zap"
 	"gorm.io/gorm"
 )
@@ -89,13 +89,21 @@ func (s *MutualService) Update(id uint, mutual *models.Mutual) error {
 	return nil
 }
 
-
-// Delete elimina un mutual
+// Delete elimina una mutual (soft delete)
 func (s *MutualService) Delete(id uint) error {
-if err := s.repo.Delete(id); err != nil {
-s.logger.Error("Error al eliminar mutual", zap.Error(err))
-return err
-}
-s.logger.Info("Mutual eliminado exitosamente", zap.Uint("id", id))
-return nil
+	// Verificar que existe
+	_, err := s.repo.FindByID(id)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return errors.New("mutual no encontrada")
+		}
+		return err
+	}
+
+	if err := s.repo.Delete(id); err != nil {
+		s.logger.Error("Error al eliminar mutual", zap.Error(err))
+		return err
+	}
+	s.logger.Info("Mutual eliminada exitosamente", zap.Uint("id", id))
+	return nil
 }

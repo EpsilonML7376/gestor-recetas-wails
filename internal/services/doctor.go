@@ -3,9 +3,9 @@ package services
 import (
 	"errors"
 
+	"GestorRecetasWails/internal/dto"
 	"GestorRecetasWails/internal/models"
 	"GestorRecetasWails/internal/repositories"
-	"GestorRecetasWails/internal/dto"
 	"go.uber.org/zap"
 	"gorm.io/gorm"
 )
@@ -89,13 +89,21 @@ func (s *DoctorService) Update(id uint, doctor *models.Doctor) error {
 	return nil
 }
 
-
-// Delete elimina un doctor
+// Delete elimina un doctor (soft delete)
 func (s *DoctorService) Delete(id uint) error {
-if err := s.repo.Delete(id); err != nil {
-s.logger.Error("Error al eliminar doctor", zap.Error(err))
-return err
-}
-s.logger.Info("Doctor eliminado exitosamente", zap.Uint("id", id))
-return nil
+	// Verificar que existe
+	_, err := s.repo.FindByID(id)
+	if err != nil {
+		if errors.Is(err, gorm.ErrRecordNotFound) {
+			return errors.New("doctor no encontrado")
+		}
+		return err
+	}
+
+	if err := s.repo.Delete(id); err != nil {
+		s.logger.Error("Error al eliminar doctor", zap.Error(err))
+		return err
+	}
+	s.logger.Info("Doctor eliminado exitosamente", zap.Uint("id", id))
+	return nil
 }

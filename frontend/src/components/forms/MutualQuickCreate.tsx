@@ -28,7 +28,7 @@ export const MutualQuickCreate: React.FC<MutualQuickCreateProps> = ({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     try {
-      const newMutual = await createMutual.mutateAsync({ ...({} as any), nombre });
+      const newMutual = await createMutual.mutateAsync(models.Mutual.createFrom({ nombre }));
       setNombre('');
       if (onCreated) {
         onCreated(newMutual);

@@ -1,5 +1,7 @@
 package models
 
+import "gorm.io/gorm"
+
 type Cliente struct {
 	ID       uint   `gorm:"primaryKey" json:"id"`
 	Nombre   string `gorm:"index" json:"nombre" binding:"required"`
@@ -7,6 +9,6 @@ type Cliente struct {
 	DNI      string `gorm:"index" json:"dni"`
 	Telefono string `json:"telefono"`
 
-	Recetas []Receta `gorm:"foreignKey:ClienteID" json:"recetas,omitempty"`
+	Recetas   []Receta       `gorm:"foreignKey:ClienteID" json:"recetas,omitempty"`
+	DeletedAt gorm.DeletedAt `gorm:"index" json:"-"`
 }
-

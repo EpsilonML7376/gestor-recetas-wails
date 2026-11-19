@@ -28,8 +28,8 @@ export const useCreateCliente = () => {
       queryClient.invalidateQueries({ queryKey: ['clientes'] });
       enqueueSnackbar('Cliente creado exitosamente', { variant: 'success' });
     },
-    onError: (error: any) => {
-      enqueueSnackbar(error.response?.data?.message || 'Error al crear el cliente', {
+    onError: (error: Error) => {
+      enqueueSnackbar(error?.message || 'Error al crear el cliente', {
         variant: 'error',
       });
     },
@@ -47,8 +47,8 @@ export const useUpdateCliente = () => {
       queryClient.invalidateQueries({ queryKey: ['clientes'] });
       enqueueSnackbar('Cliente actualizado exitosamente', { variant: 'success' });
     },
-    onError: (error: any) => {
-      enqueueSnackbar(error.response?.data?.message || 'Error al actualizar el cliente', {
+    onError: (error: Error) => {
+      enqueueSnackbar(error?.message || 'Error al actualizar el cliente', {
         variant: 'error',
       });
     },
@@ -65,8 +65,8 @@ export const useDeleteCliente = () => {
       queryClient.invalidateQueries({ queryKey: ['clientes'] });
       enqueueSnackbar('Cliente eliminado exitosamente', { variant: 'success' });
     },
-    onError: (error: any) => {
-      enqueueSnackbar(error.response?.data?.message || 'Error al eliminar el cliente', {
+    onError: (error: Error) => {
+      enqueueSnackbar(error?.message || 'Error al eliminar el cliente', {
         variant: 'error',
       });
     },

@@ -446,7 +446,7 @@ export const RecetasList: React.FC = () => {
             {/* Paginación para móvil */}
             <Paper sx={{ mt: 2, display: 'flex', alignItems: 'center', justifyContent: 'center', p: 2 }}>
               <TablePagination
-                rowsPerPageOptions={[5, 10, 25]}
+                rowsPerPageOptions={[5, 10, 20, 25]}
                 component="div"
                 count={total}
                 rowsPerPage={rowsPerPage}
@@ -542,7 +542,7 @@ export const RecetasList: React.FC = () => {
               </TableBody>
             </Table>
             <TablePagination
-              rowsPerPageOptions={[5, 10, 25, 50]}
+              rowsPerPageOptions={[5, 10, 20, 25, 50]}
               component="div"
               count={total}
               rowsPerPage={rowsPerPage}

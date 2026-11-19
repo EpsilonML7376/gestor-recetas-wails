@@ -15,6 +15,7 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { MainLayout } from '../../components/layout/MainLayout';
 import { useDoctor, useCreateDoctor, useUpdateDoctor } from '../../hooks/useDoctores';
 import { LoadingSpinner } from '../../components/common/LoadingSpinner';
+import { models } from '../../../wailsjs/go/models';
 
 export const DoctorForm: React.FC = () => {
   const { id } = useParams<{ id: string }>();
@@ -45,16 +46,16 @@ export const DoctorForm: React.FC = () => {
       return;
     }
 
-    const data = {
+    const data = models.Doctor.createFrom({
       nombre,
       apellido,
-    };
+    });
 
     try {
       if (isEdit) {
-        await updateDoctor.mutateAsync({ id: Number(id), data: data as any });
+        await updateDoctor.mutateAsync({ id: Number(id), data });
       } else {
-        await createDoctor.mutateAsync(data as any);
+        await createDoctor.mutateAsync(data);
       }
       navigate('/doctores');
     } catch (error) {

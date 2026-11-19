@@ -3,9 +3,9 @@ package services
 import (
 	"errors"
 
+	"GestorRecetasWails/internal/dto"
 	"GestorRecetasWails/internal/models"
 	"GestorRecetasWails/internal/repositories"
-	"GestorRecetasWails/internal/dto"
 	"go.uber.org/zap"
 	"gorm.io/gorm"
 )
@@ -24,7 +24,7 @@ func NewRecetaService(repo *repositories.RecetaRepository, logger *zap.Logger) *
 
 // CalcularTotal calcula el total sumando todos los lentes
 func (s *RecetaService) CalcularTotal(receta *models.Receta) {
-	total := 0
+	var total int64
 	for _, lente := range receta.Lentes {
 		total += lente.CristalPrecio + lente.ArmazonPrecio
 	}
@@ -145,7 +145,7 @@ func (s *RecetaService) Delete(id uint) error {
 }
 
 // GetTotal obtiene solo el total de una receta
-func (s *RecetaService) GetTotal(id uint) (int, error) {
+func (s *RecetaService) GetTotal(id uint) (int64, error) {
 	receta, err := s.GetByID(id)
 	if err != nil {
 		return 0, err
@@ -153,4 +153,3 @@ func (s *RecetaService) GetTotal(id uint) (int, error) {
 
 	return receta.TotalLente, nil
 }
-

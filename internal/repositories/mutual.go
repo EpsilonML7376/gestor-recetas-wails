@@ -82,8 +82,7 @@ func (r *MutualRepository) Count(filters MutualFilters) (int64, error) {
 	return count, err
 }
 
-
 // Delete elimina un mutual
 func (r *MutualRepository) Delete(id uint) error {
-return r.db.Delete(&models.Mutual{}, id).Error
+	return r.db.Delete(&models.Mutual{}, id).Error
 }

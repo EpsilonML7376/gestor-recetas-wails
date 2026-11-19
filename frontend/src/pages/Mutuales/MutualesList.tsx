@@ -135,7 +135,7 @@ export const MutualesList: React.FC = () => {
             </TableBody>
           </Table>
           <TablePagination
-            rowsPerPageOptions={[5, 10, 25, 50]}
+            rowsPerPageOptions={[5, 10, 20, 25, 50]}
             component="div"
             count={total}
             rowsPerPage={rowsPerPage}

@@ -28,8 +28,8 @@ export const useCreateDoctor = () => {
       queryClient.invalidateQueries({ queryKey: ['doctores'] });
       enqueueSnackbar('Doctor creado exitosamente', { variant: 'success' });
     },
-    onError: (error: any) => {
-      enqueueSnackbar(error.response?.data?.message || 'Error al crear el doctor', {
+    onError: (error: Error) => {
+      enqueueSnackbar(error?.message || 'Error al crear el doctor', {
         variant: 'error',
       });
     },
@@ -47,8 +47,8 @@ export const useUpdateDoctor = () => {
       queryClient.invalidateQueries({ queryKey: ['doctores'] });
       enqueueSnackbar('Doctor actualizado exitosamente', { variant: 'success' });
     },
-    onError: (error: any) => {
-      enqueueSnackbar(error.response?.data?.message || 'Error al actualizar el doctor', {
+    onError: (error: Error) => {
+      enqueueSnackbar(error?.message || 'Error al actualizar el doctor', {
         variant: 'error',
       });
     },

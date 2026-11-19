@@ -2,6 +2,7 @@
 build/bin/
 frontend/dist/
 frontend/dist-ssr/
+frontend/package.json.md5
 
 # Go
 bin/
